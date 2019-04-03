@@ -1,0 +1,17 @@
+api:
+  user:
+    created_ok: 'Se a guardado el nuevo usuario: '
+    nonvalid_format: 'El formato del email es incorrecto: '
+    existing_email: 'Ya existe un usuario con el email: '
+    catch_error: 'Se he producido un error contacte con el administrador '
+    required_field: 'Rellene el campo obligatorio '
+  userService:
+    non_numeric: 'El valor del id debe ser numerico '
+    id_unexist: 'No se ha encontrado el usuario con el id: '
+    unexisting_user: 'No se ha encontrado el usuario con el id: '
+    deleted_ok: 'Se a eliminado al usuario '
+    empty_fields: 'Al menos debes rellenar alguno de estos campos: '
+    updated_ok: 'El perfil se a actualizado correctamente. '
+
+    
+ 

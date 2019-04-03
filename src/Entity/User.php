@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
@@ -18,6 +20,7 @@ class User
 
     /**
      * @ORM\Column(type="string", length=75, nullable=true)
+     * 
      */
     private $name;
 
@@ -28,6 +31,7 @@ class User
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank
      */
     private $email;
 
@@ -46,11 +50,20 @@ class User
         return $this->name;
     }
 
-    public function setName(?string $name): self
-    {
-        $this->name = $name;
-
-        return $this;
+    public function setName(?string $name) 
+    { 
+        if(ctype_alpha($name)){
+            $this->name = $name;
+            return $this;
+        }
+        else{
+            $message = ["message"=>"El nombre solo puede contener caracteres alfabeticos"];
+            return new Response(
+                    json_encode($message),
+                    Response::HTTP_OK,
+                    ['Content-type' => 'application/json']
+                );
+        }   
     }
 
     public function getSurname(): ?string
@@ -58,11 +71,20 @@ class User
         return $this->surname;
     }
 
-    public function setSurname(?string $surname): self
+    public function setSurname(?string $surname)
     {
-        $this->surname = $surname;
-
-        return $this;
+        if(ctype_alpha($surname)){
+            $this->surname = $surname;
+            return $this;
+        }
+        else{
+            $message = ["message"=>"El nombre solo puede contener caracteres alfabeticos"];
+            return new Response(
+                    json_encode($message),
+                    Response::HTTP_OK,
+                    ['Content-type' => 'application/json']
+                );
+        }  
     }
 
     public function getEmail(): ?string
@@ -70,11 +92,20 @@ class User
         return $this->email;
     }
 
-    public function setEmail(string $email): self
+    public function setEmail(string $email) 
     {
-        $this->email = $email;
-
-        return $this;
+        if(filter_var($email, FILTER_VALIDATE_EMAIL)){
+            $this->email = $email;
+            return $this;
+        }
+        else{
+            $message = ["message"=>"El nombre solo puede contener caracteres alfabeticos"];
+            return new Response(
+                    json_encode($message),
+                    Response::HTTP_OK,
+                    ['Content-type' => 'application/json']
+                );
+        }
     }
 
     public function getPassword(): ?string
@@ -82,10 +113,19 @@ class User
         return $this->password;
     }
 
-    public function setPassword(string $password): self
+    public function setPassword(string $password)
     {
-        $this->password = $password;
-
-        return $this;
+        if(strlen($password) > 8 && ctype_alnum($password)){
+            $this->password =$password;
+            return $this; 
+        }
+        else{
+            $message = ["message"=>"El nombre solo puede contener caracteres alfabeticos"];
+            return new Response(
+                    json_encode($message),
+                    Response::HTTP_OK,
+                    ['Content-type' => 'application/json']
+                );
+        }
     }
 }

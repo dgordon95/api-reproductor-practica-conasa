@@ -1,0 +1,12 @@
+Selecciona todos los elementos de tipo parrafo <p>
+
+p {
+  color: red;
+  text-align: center;
+}
+
+Seleccionar por id todos los elementos con la id 12
+
+#12 {
+	
+}

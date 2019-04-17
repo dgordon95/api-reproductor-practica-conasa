@@ -8,6 +8,7 @@
         "doctrine/annotations": "^1.6",
         "friendsofsymfony/rest-bundle": "^2.5",
         "nelmio/api-doc-bundle": "^3.4",
+        "nelmio/cors-bundle": "^1.5",
         "sensio/framework-extra-bundle": "^5.2",
         "symfony/apache-pack": "^1.0",
         "symfony/asset": "4.2.*",

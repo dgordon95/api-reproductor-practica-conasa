@@ -14,6 +14,9 @@ use FOS\RestBundle\Controller\FOSRestController;
 use Psr\Log\LoggerInterface;
 use Swagger\Annotations as SWG;
 use Nelmio\ApiDocBundle\Annotation\Model;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Serializer\SerializerInterface;
+
 
 class UserController extends FOSRestController
 {
@@ -58,15 +61,16 @@ class UserController extends FOSRestController
     {
         $translator = $this->container->get('translator');
         try{
-            $requiredParameters = ["name","surname","password"];
+            $requiredParameters = ["name","surname","password","username"];
             foreach($requiredParameters as $parameter){
                 if(!$request->request->get($parameter)) return new JsonResponse(['error' => $translator->trans('api.user.required_field').$parameter],400);
             }
             $entityManager = $this->getDoctrine()->getManager();
             $email = $request->request->get("email");
-            $user = $this->getDoctrine()->getRepository(User::class)->findBy(["email" => $email]);     
-            // if(!filter_var($email, FILTER_VALIDATE_EMAIL)) return new JsonResponse(['error' => $translator->trans('api.user.nonvalid_format').$email],400);
-            if(count($user) != 0) return new JsonResponse(['error' => $translator->trans('api.user.existing_email').$email],400);
+            $username = $request->request->get("username");
+            $user = $this->getDoctrine()->getRepository(User::class)->findOneBy(["email" => $email]);
+            if(!is_null($user)) return new JsonResponse(['error' => $translator->trans('api.user.existing_email').$email],400);
+            if(!is_null($user)) return new JsonResponse(['error' => $translator->trans('api.user.existing_username').$username],400);
             list($user,$error) = $userService->create($request->request->all());
             if(!is_null($error))return $error;
         } catch(\Exception $e){
@@ -101,7 +105,7 @@ class UserController extends FOSRestController
            $user = $userService->getUserById($id);
         }
         catch(\Exception $e){
-            $logger->error($translator->trans('api.user.catch_error'));
+            $logger->error($e->getMessage());
             return new JsonResponse(['error' => $translator->trans('api.user.catch_error')],400);
          }
         return $user;
@@ -132,7 +136,7 @@ class UserController extends FOSRestController
            $user = $userService->deleteUserById($request->request->all());
      }
         catch(\Exception $e){
-            $logger->error($translator->trans('api.user.catch_error'));
+           $logger->error($e->getMessage());
             return new JsonResponse(['error' => $translator->trans('api.user.catch_error')],400);
      }
         return $user;
@@ -189,9 +193,10 @@ class UserController extends FOSRestController
        }
        catch(\Exception $e)
        {
-            $logger->error($translator->trans('api.user.catch_error'));
+            $logger->error($e->getMessage());
             return new JsonResponse(['error' => $translator->trans('api.user.catch_error')],400);
        }
         return $user;
     }
+    
 } 

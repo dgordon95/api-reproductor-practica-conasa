@@ -5,12 +5,18 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints as Assert;
-
+use Symfony\Component\Security\Core\User\UserInterface;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  */
-class User
+class User implements UserInterface
 {
+
+    public function __construct()
+    {
+        $this->apiKey = md5(time());
+    }
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -20,12 +26,15 @@ class User
 
     /**
      * @ORM\Column(type="string", length=75, nullable=true)
-     * 
+     * @Assert\Type(type="alpha")
+     * @Assert\NotBlank
      */
     private $name;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Assert\Type(type="alpha")
+     * @Assert\NotBlank
      */
     private $surname;
 
@@ -37,8 +46,20 @@ class User
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank
      */
     private $password;
+
+    /**
+     * @ORM\Column(type="string", length=50)
+     * @Assert\NotBlank
+     */
+    private $username;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $apiKey;
 
     public function getId(): ?int
     {
@@ -52,18 +73,8 @@ class User
 
     public function setName(?string $name) 
     { 
-        if(ctype_alpha($name)){
             $this->name = $name;
             return $this;
-        }
-        else{
-            $message = ["message"=>"El nombre solo puede contener caracteres alfabeticos"];
-            return new Response(
-                    json_encode($message),
-                    Response::HTTP_OK,
-                    ['Content-type' => 'application/json']
-                );
-        }   
     }
 
     public function getSurname(): ?string
@@ -73,18 +84,8 @@ class User
 
     public function setSurname(?string $surname)
     {
-        if(ctype_alpha($surname)){
             $this->surname = $surname;
             return $this;
-        }
-        else{
-            $message = ["message"=>"El nombre solo puede contener caracteres alfabeticos"];
-            return new Response(
-                    json_encode($message),
-                    Response::HTTP_OK,
-                    ['Content-type' => 'application/json']
-                );
-        }  
     }
 
     public function getEmail(): ?string
@@ -94,18 +95,8 @@ class User
 
     public function setEmail(string $email) 
     {
-        if(filter_var($email, FILTER_VALIDATE_EMAIL)){
             $this->email = $email;
             return $this;
-        }
-        else{
-            $message = ["message"=>"El nombre solo puede contener caracteres alfabeticos"];
-            return new Response(
-                    json_encode($message),
-                    Response::HTTP_OK,
-                    ['Content-type' => 'application/json']
-                );
-        }
     }
 
     public function getPassword(): ?string
@@ -115,17 +106,46 @@ class User
 
     public function setPassword(string $password)
     {
-        if(strlen($password) > 8 && ctype_alnum($password)){
             $this->password =$password;
             return $this; 
-        }
-        else{
-            $message = ["message"=>"El nombre solo puede contener caracteres alfabeticos"];
-            return new Response(
-                    json_encode($message),
-                    Response::HTTP_OK,
-                    ['Content-type' => 'application/json']
-                );
-        }
+    }
+
+    public function getUsername()
+    {
+        return $this->username;
+    }
+
+    public function setUsername($username)
+    {
+        $this->username = $username;
+    }
+
+    public function getSalt()
+    {
+        // The bcrypt and argon2i algorithms don't require a separate salt.
+        // You *may* need a real salt if you choose a different encoder.
+        return null;
+    }
+
+    public function getRoles()
+    {
+        return array('ROLE_USER');
+    }
+    
+
+    public function eraseCredentials()
+    {
+    }
+
+    public function getApiKey(): ?string
+    {
+        return $this->apiKey;
+    }
+
+    public function setApiKey(string $apiKey): self
+    {
+        $this->apiKey = $apiKey;
+
+        return $this;
     }
 }

@@ -54,7 +54,7 @@ class UserService
             return [$user,null];
     }
 
-    public function getUserById(int $id) : Response
+    public function getUserById($id) : Response
     {   
         $translator = $this->container->get('translator');
         if(!is_numeric($id)) return new JsonResponse(['error' => $translator->trans('api.userService.non_numeric').$id],401);   
@@ -127,7 +127,8 @@ class UserService
                 Response::HTTP_NOT_FOUND,
                 ['Content-type' => 'application/json']
         );    
-        $this->change($user,$params);
+        list($user,$error) = $this->change($user,$params);
+        if(!is_null($error))return $error;
         $message = ["message" => $translator->trans('api.userService.updated_ok')];
         return new Response(      
             json_encode($message),
@@ -138,13 +139,27 @@ class UserService
     
     public function change(User $user,array $params)
     {       
-            if(in_array('password',$params))$params['password'] = $this->passwordEncoder->encodePassword($user, $params['password']);
+            if(array_key_exists('password',$params))$params['password'] = $this->passwordEncoder->encodePassword($user, $params['password']);
             if(array_key_exists("name",$params))$user->setName($params['name']);
             if(array_key_exists("surname",$params))$user->setSurname($params['surname']);      
             if(array_key_exists("email",$params))$user->setEmail($params['email']);
             if(array_key_exists("password",$params))$user->setPassword($params['password']);
+            $errors = $this->validator->validate($user);
+            if (count($errors) > 0) {
+                foreach($errors as $error){
+                    $obj = new \stdClass;
+                    $obj->error = $error->getMessage()."(".$error->GetPropertyPath().")";
+                    $errorsMessage[] = $obj;
+                }
+                return [null,new Response(
+                    json_encode($errorsMessage),
+                    Response::HTTP_NOT_FOUND,
+                    ['Content-type' => 'application/json']
+                )];
+            }
             $entityManager = $this->entityManager;
             $entityManager->persist($user);
-            $entityManager->flush();            
+            $entityManager->flush(); 
+            return [$user,null];           
     }
 } 

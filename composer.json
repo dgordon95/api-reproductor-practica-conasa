@@ -7,6 +7,7 @@
         "ext-iconv": "*",
         "doctrine/annotations": "^1.6",
         "friendsofsymfony/rest-bundle": "^2.5",
+        "guzzlehttp/guzzle": "^6.3",
         "jwilsson/spotify-web-api-php": "^2.6",
         "nelmio/api-doc-bundle": "^3.4",
         "nelmio/cors-bundle": "^1.5",
@@ -34,6 +35,7 @@
         "symfony/yaml": "4.2.*"
     },
     "require-dev": {
+        "doctrine/doctrine-fixtures-bundle": "^3.1",
         "symfony/debug-pack": "*",
         "symfony/maker-bundle": "^1.11",
         "symfony/profiler-pack": "^1.0",

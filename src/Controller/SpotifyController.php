@@ -61,7 +61,7 @@ class SpotifyController
      
            $contents = str_replace('\n', '', $contents);
             $contents = rtrim($contents, ',');
-            $contents = "[" . trim($contents) . "]";
+           
             $json = json_decode($contents, true);
            return new JsonResponse($json);
     }

@@ -2,67 +2,76 @@
 // src/Controller/SpotifyController.php
 namespace App\Controller;
 
+use App\Utils\SpotifyService;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use GuzzleHttp\Client;
 use Psr\Http\Message\ResponseInterface;
+use GuzzleHttp\Exception\BadResponseException;
 
 class SpotifyController
 {
     /**
      * @Route("/spotify/token")
      */
-    public function getToken()
+    public function getToken(SpotifyService $spotifyService)
     {
-        $client_id = '3a5ac347d15940b9b92dcbc9c98e27bf'; 
-        $client_secret = '0eae6c25f62e4208becf35db761d8f0e'; 
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL,            'https://accounts.spotify.com/api/token' );
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1 );
-        curl_setopt($ch, CURLOPT_POST,           1 );
-        curl_setopt($ch, CURLOPT_POSTFIELDS,     'grant_type=client_credentials' ); 
-        curl_setopt($ch, CURLOPT_HTTPHEADER,     array('Authorization: Basic '.base64_encode($client_id.':'.$client_secret))); 
-
-        $result=curl_exec($ch);
+        try{
+            $token = $spotifyService->getTokenService();
+        }
+        catch(\Exception $e){
+            $logger->error($e->getMessage());
+            return new JsonResponse(['error' => $translator->trans('api.user.catch_error')],400);
+         }
+        return new JsonResponse($token);       
         
-        $result = str_replace('\n', '', $result);
-        $result = rtrim($result, ',');
-        $result = "[" . trim($result) . "]";
-        $token = $porciones = explode('"', $result);
-        return $token[3];       
     }
-    /*$json[0]['access_token']*/
 
 
     /**
      * @Route("/spotify/artist/{artist}")
      */
-    public function searchArtist($artist)
+    public function searchArtist($artist,SpotifyService $spotifyService)
     {
-    $client = new \GuzzleHttp\Client([
-    // Base URI is used with relative requests
-    'base_uri' => 'https://api.spotify.com/v1/search',
-    // You can set any number of default request options.
-    'timeout'  => 2.0,
-]);
-        /**'?q=Linkin+Park&type=track&limit=5&access_token=BQDszhaxI43cZwYwiuuL18Q4nYtvb0FTfCjnWTT23OUDEZMW1mCUJdIk-sn347gdq1nbGwOymkoMST9cB00' ); 
-    */
-    
-        $token = $this->getToken();
-       
-       
-        
-        $response  =  $client -> request ( 'GET' ,'https://api.spotify.com/v1/search',['query' => ['q'  =>  $artist,'type' => 'artist',
-                                                                                                  'limit' => '5','access_token' =>  $token]
-                                                                                                  ]); 
-           $contents = (string) $response->getBody();
-     
-           $contents = str_replace('\n', '', $contents);
-            $contents = rtrim($contents, ',');
-           
-            $json = json_decode($contents, true);
-           return new JsonResponse($json);
+        try{
+            $artist = $spotifyService->getArtistService($artist);
+        }
+        catch(\Exception $e){
+            $logger->error($e->getMessage());
+            return new JsonResponse(['error' => $translator->trans('api.user.catch_error')],400);
+         }
+        return $artist;
+    }
+/**https://api.spotify.com/v1/artists/7dGJo4pcD2V6oG8kP0tJRR/albums?market=ES&limit=1&access_token=BQAYWnHnmH9Ko33FCvJawIOKvG3gMpsSiL24U9gi-4GgimIhYP0qaZyNDYM_24hLseux83PTIXSpK4FvCK8 */
+
+    /**
+     * @Route("/spotify/artists/{id}/albums")
+     */
+    public function getArtistAlbum($id,SpotifyService $spotifyService)
+    {
+
+        try {
+            $client = new \GuzzleHttp\Client([
+        // Base URI is used with relative requests
+        'base_uri' => $_ENV['API_SPOTIFY_URL'].'/artists/'.$id.'/albums',
+        // You can set any number of default request options.
+        'timeout'  => 2.0,
+        ]);
+            
+        $token = $spotifyService->getTokenService();       
+            $response  =  $client -> request('GET' ,
+                        $_ENV['API_SPOTIFY_URL'].'/artists/'.$id.'/albums',
+                        ['query' => ['limit' => '1','access_token' => $token]
+            ]); 
+            $contents = (string) $response->getBody();
+        } catch (BadResponseException $exception) {
+            $responseBody = $exception->getResponse()->getBody(true);
+        }
+
+        $contents = str_replace('\n', '', $responseBody);
+        $contents = rtrim($contents, ',');
+        $json = json_decode($contents, true);
+        return new JsonResponse($json);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Utils;
 
+use App\Utils\SpotifyService;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -36,7 +37,7 @@ class SpotifyService
     {
         $client = new \GuzzleHttp\Client([
         // Base URI is used with relative requests
-        'base_uri' => 'https://api.spotify.com/v1/search',
+        'base_uri' => $_ENV['API_SPOTIFY_URL'].'/search',
         // You can set any number of default request options.
         'timeout'  => 2.0,
         ]);
@@ -44,7 +45,7 @@ class SpotifyService
         $token = $this->getTokenService();       
                 
                 
-        $response  =  $client -> request ( 'GET' ,'https://api.spotify.com/v1/search',['query' => ['q'  =>  $artist,'type' => 'artist',
+        $response  =  $client -> request ( 'GET' ,$_ENV['API_SPOTIFY_URL'].'/search',['query' => ['q'  =>  $artist,'type' => 'artist',
                                                                                                         'limit' => '1','access_token' => $token]
                                                                                                         ]); 
         $contents = (string) $response->getBody();

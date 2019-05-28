@@ -64,7 +64,7 @@ class SpotifyController
                         $_ENV['API_SPOTIFY_URL'].'/artists/'.$id.'/albums',
                         ['query' => ['limit' => '1','access_token' => $token]
             ]); 
-            $contents = (string) $response->getBody();
+            $responseBody = (string) $response->getBody();
         } catch (BadResponseException $exception) {
             $responseBody = $exception->getResponse()->getBody(true);
         }

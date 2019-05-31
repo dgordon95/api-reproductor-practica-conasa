@@ -52,26 +52,12 @@ class SpotifyController
     {
 
         try {
-            $client = new \GuzzleHttp\Client([
-        // Base URI is used with relative requests
-        'base_uri' => $_ENV['API_SPOTIFY_URL'].'/artists/'.$id.'/albums',
-        // You can set any number of default request options.
-        'timeout'  => 2.0,
-        ]);
-            
-        $token = $spotifyService->getTokenService();       
-            $response  =  $client -> request('GET' ,
-                        $_ENV['API_SPOTIFY_URL'].'/artists/'.$id.'/albums',
-                        ['query' => ['limit' => '1','access_token' => $token]
-            ]); 
-            $responseBody = (string) $response->getBody();
-        } catch (BadResponseException $exception) {
-            $responseBody = $exception->getResponse()->getBody(true);
+           $album = $spotifyService->getArtistAlbumService($id);
+  
+        } catch (\Exception $exception) {
+            $logger->error($e->getMessage());
+            return new JsonResponse(['error' => $translator->trans('api.user.catch_error')],400);
         }
-
-        $contents = str_replace('\n', '', $responseBody);
-        $contents = rtrim($contents, ',');
-        $json = json_decode($contents, true);
-        return new JsonResponse($json);
+        return $album;      
     }
 }

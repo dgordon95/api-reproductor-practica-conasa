@@ -60,4 +60,19 @@ class SpotifyController
         }
         return $album;      
     }
+
+    /**
+     * @Route("/spotify/artists/{id}/top-tracks")
+     */
+    public function getArtistTopTracks($id,SpotifyService $spotifyService){
+           try {
+           $tracks = $spotifyService->getAtristTopTracksService($id);
+  
+        } catch (\Exception $exception) {
+            $logger->error($e->getMessage());
+            return new JsonResponse(['error' => $translator->trans('api.user.catch_error')],400);
+        }
+        return $tracks; 
+
+    }
 }

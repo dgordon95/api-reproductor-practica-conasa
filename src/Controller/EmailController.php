@@ -14,8 +14,8 @@ class EmailController extends AbstractController
     public function index($name,\Swift_Mailer $mailer)
     {
         $message = (new \Swift_Message('Hello Email'))
-            ->setFrom('')
-            ->setTo('')
+            ->setFrom('reproductorLibre@gmail.com')
+            ->setTo('dgordonmas@gmail.com')
             ->setBody(
                 $this->render(
                     // templates/emails/registration.html.twig
@@ -27,6 +27,6 @@ class EmailController extends AbstractController
         ;
         $mailer->send($message);
 
-        return new Response("hola");
+        return new Response("Mensaje de confirmacion enviado");
     }
 }

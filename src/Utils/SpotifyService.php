@@ -78,4 +78,25 @@ class SpotifyService
         return new JsonResponse($json);
     }
     
+    public function getAtristTopTracksService($id){
+         $client = new \GuzzleHttp\Client([
+        // Base URI is used with relative requests
+        'base_uri' => $_ENV['API_SPOTIFY_URL'].'/artists/'.$id.'/top-tracks',
+        // You can set any number of default request options.
+        'timeout'  => 2.0,
+        ]);
+            
+         $token = $this->getTokenService();       
+            $response  =  $client -> request('GET' ,
+                        $_ENV['API_SPOTIFY_URL'].'/artists/'.$id.'/top-tracks',
+                        ['query' => ['country' => 'ES','access_token' => $token]
+            ]); 
+        $contents = (string) $response->getBody();
+            
+        $contents = str_replace('\n', '', $contents);
+        $contents = rtrim($contents, ',');
+        $json = json_decode($contents, true);
+        return new JsonResponse($json);
+
+    }
 }

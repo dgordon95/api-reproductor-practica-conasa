@@ -2,18 +2,19 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        
     </head>
     <body>
-       {# templates/emails/registration.html.twig #}
-<h3>You did it! You registered!</h3>
+{# templates/emails/registration.html.twig #}
+<h3>Ya estas registrado!</h3>
 
-Hi {{ name }}! You're successfully registered.
+Saludos {{ name }}!Tu registro se a realizado correnctamente.
+Solo queda un paso, activar tu cuenta. Para ello haga click en
+el siguiente enlaze:
 
 {# example, assuming you have a route named "login" #}
-To login, go to: <a href="{{ url('login') }}">...</a>.
+<a href="{{ my_function('URL_FRONTEND') }}" class="btn btn-primary btn-lg square" role="button">Verificar</a>
 
-Thanks!
+Gracias!
 
     </body>
 </html>

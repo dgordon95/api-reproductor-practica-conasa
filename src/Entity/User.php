@@ -61,6 +61,11 @@ class User implements UserInterface
      */
     private $apiKey;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $verify = false;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -148,4 +153,17 @@ class User implements UserInterface
 
         return $this;
     }
+
+    public function getVerify(): ?bool
+    {
+        return $this->verify;
+    }
+
+    public function setVerify(bool $verify): self
+    {
+        $this->verify = $verify;
+
+        return $this;
+    }
+
 }

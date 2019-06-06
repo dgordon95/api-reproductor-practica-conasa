@@ -34,6 +34,7 @@ class SecurityController extends AbstractController
             'roles' => $user->getRoles(),
             'apiKey' => $user->getApiKey(),
             'id' => $user->getId(),
+            'verify' => $user->getVerify()
         ]);
     }
 } 

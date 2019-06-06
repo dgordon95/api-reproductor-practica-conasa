@@ -7,13 +7,32 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use GuzzleHttp\Client;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Swagger\Annotations as SWG;
 use Psr\Http\Message\ResponseInterface;
 use GuzzleHttp\Exception\BadResponseException;
+use FOS\RestBundle\Controller\FOSRestController;
 
-class SpotifyController
+class SpotifyController extends FOSRestController
 {
+    
     /**
-     * @Route("/spotify/token")
+     * Recibir token
+     *
+     * Este método permite conseguir un token de acceso.
+     *
+     * @Route("/api/spotify/token", methods={"GET"})
+     * @SWG\Response(
+     *     response=200,
+     *     description="Devuelve el token necesario  para hacer peticiones a Spotify-Api",
+     * )
+     * @SWG\Parameter(
+     *     name="artist",
+     *     in="path",
+     *     type="string",
+     *     description="Nombre del artista"
+     * )
+     * @SWG\Tag(name="Spotify")
      */
     public function getToken(SpotifyService $spotifyService)
     {
@@ -30,7 +49,22 @@ class SpotifyController
 
 
     /**
-     * @Route("/spotify/artist/{artist}")
+     * Busar artista
+     *
+     * Este método permite buscar artistas en Spotify.
+     *
+     * @Route("/api/spotify/artist/{artist}", methods={"GET"})
+     * @SWG\Response(
+     *     response=200,
+     *     description="Muestra todos los datos de un usuario de Spotify buscado por nombre.",
+     * )
+     * @SWG\Parameter(
+     *     name="artist",
+     *     in="path",
+     *     type="string",
+     *     description="Nombre del artista"
+     * )
+     * @SWG\Tag(name="Spotify")
      */
     public function searchArtist($artist,SpotifyService $spotifyService)
     {
@@ -43,10 +77,24 @@ class SpotifyController
          }
         return $artist;
     }
-/**https://api.spotify.com/v1/artists/7dGJo4pcD2V6oG8kP0tJRR/albums?market=ES&limit=1&access_token=BQAYWnHnmH9Ko33FCvJawIOKvG3gMpsSiL24U9gi-4GgimIhYP0qaZyNDYM_24hLseux83PTIXSpK4FvCK8 */
-
+    
     /**
-     * @Route("/spotify/artists/{id}/albums")
+     * Busar ablbum
+     *
+     * Este método permite buscar el ultimo album de un artistas en Spotify.
+     *
+     * @Route("/api/spotify/artists/{id}/albums",methods={"GET"})
+     * @SWG\Response(
+     *     response=200,
+     *     description="Muestra todos los datos de el ultimo album de un usuario de Spotify.",
+     * )
+     * @SWG\Parameter(
+     *     name="id",
+     *     in="path",
+     *     type="string",
+     *     description="Id del artista"
+     * )
+     * @SWG\Tag(name="Spotify")
      */
     public function getArtistAlbum($id,SpotifyService $spotifyService)
     {
@@ -60,9 +108,24 @@ class SpotifyController
         }
         return $album;      
     }
-
+        
     /**
-     * @Route("/spotify/artists/{id}/top-tracks")
+     * Busar ablbum
+     *
+     * Este método permite buscar los temas mas conocidos de un artista de Spotify.
+     *
+     * @Route("/api/spotify/artists/{id}/top-tracks",methods={"GET"})
+     * @SWG\Response(
+     *     response=200,
+     *     description="Muestra los 10 temas mas reproducidos de un usuario de Spotify.",
+     * )
+     * @SWG\Parameter(
+     *     name="id",
+     *     in="path",
+     *     type="string",
+     *     description="Id del artista"
+     * )
+     * @SWG\Tag(name="Spotify")
      */
     public function getArtistTopTracks($id,SpotifyService $spotifyService){
            try {

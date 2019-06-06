@@ -106,7 +106,7 @@ class UserService
     public function changeUserById(array $params) : Response
     {
         $translator = $this->container->get('translator');
-        $parameters = ['name','password','email'];
+        $parameters = ['name','password','email','verify'];
         if(sizeof($params) == 0 or (!isset($params['id'])))
         {
             $error = ["error" => $translator->trans('api.userService.empty_fields').implode(",",$parameters)];
@@ -144,6 +144,7 @@ class UserService
             if(array_key_exists("surname",$params))$user->setSurname($params['surname']);      
             if(array_key_exists("email",$params))$user->setEmail($params['email']);
             if(array_key_exists("password",$params))$user->setPassword($params['password']);
+            if(array_key_exists("verify",$params))$user->setVerify($params['verify']);
             $errors = $this->validator->validate($user);
             if (count($errors) > 0) {
                 foreach($errors as $error){

@@ -12,6 +12,7 @@ use Swagger\Annotations as SWG;
 use Psr\Http\Message\ResponseInterface;
 use GuzzleHttp\Exception\BadResponseException;
 use FOS\RestBundle\Controller\FOSRestController;
+use Psr\Log\LoggerInterface;
 
 class SpotifyController extends FOSRestController
 {
@@ -34,8 +35,9 @@ class SpotifyController extends FOSRestController
      * )
      * @SWG\Tag(name="Spotify")
      */
-    public function getToken(SpotifyService $spotifyService)
+    public function getToken(SpotifyService $spotifyService,LoggerInterface $logger)
     {
+        $translator = $this->container->get('translator');
         try{
             $token = $spotifyService->getTokenService();
         }
@@ -66,8 +68,9 @@ class SpotifyController extends FOSRestController
      * )
      * @SWG\Tag(name="Spotify")
      */
-    public function searchArtist($artist,SpotifyService $spotifyService)
+    public function searchArtist($artist,SpotifyService $spotifyService,LoggerInterface $logger)
     {
+        $translator = $this->container->get('translator');
         try{
             $artist = $spotifyService->getArtistService($artist);
         }
@@ -96,9 +99,9 @@ class SpotifyController extends FOSRestController
      * )
      * @SWG\Tag(name="Spotify")
      */
-    public function getArtistAlbum($id,SpotifyService $spotifyService)
+    public function getArtistAlbum($id,SpotifyService $spotifyService,LoggerInterface $logger)
     {
-
+        $translator = $this->container->get('translator');
         try {
            $album = $spotifyService->getArtistAlbumService($id);
   
@@ -127,8 +130,9 @@ class SpotifyController extends FOSRestController
      * )
      * @SWG\Tag(name="Spotify")
      */
-    public function getArtistTopTracks($id,SpotifyService $spotifyService){
-           try {
+    public function getArtistTopTracks($id,SpotifyService $spotifyService,LoggerInterface $logger){
+        $translator = $this->container->get('translator');
+        try {
            $tracks = $spotifyService->getAtristTopTracksService($id);
   
         } catch (\Exception $exception) {

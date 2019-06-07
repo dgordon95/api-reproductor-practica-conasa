@@ -2,31 +2,29 @@
 // src/Controller/LuckyController.php
 namespace App\Controller;
 
+use App\Utils\EmailService;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use GuzzleHttp\Client;
+use Psr\Log\LoggerInterface;
+use FOS\RestBundle\Controller\FOSRestController;
 
-class EmailController extends AbstractController
+class EmailController extends FOSRestController
 {
      /**
      * @Route("/email/{name}/{email}")
      */
-    public function index($name,$email,\Swift_Mailer $mailer)
+    public function index($name,$id,$apikey,$verify,$email,\Swift_Mailer $mailer,LoggerInterface $logger,EmailService $emailService)
     {
-        $message = (new \Swift_Message('Hello Email'))
-            ->setFrom('reproductorLibre@gmail.com')
-            ->setTo($email)
-            ->setBody(
-                $this->render(
-                    // templates/emails/registration.html.twig
-                    'emails/registration.html.twig',
-                    ['name' => $name]
-                ),
-                'text/html'
-            )   
-        ;
-        $mailer->send($message);
-
-        return new Response("Mensaje de confirmacion enviado");
+       $translator = $this->container->get('translator');
+        try{
+           $mail = $emailService->sendEmail($name,$email,$mailer);
+        }
+        catch(\Exception $e){
+            $logger->error($e->getMessage());
+            return new JsonResponse(['error' => $translator->trans('api.user.catch_error')],400);
+         }
+        return $mail;
     }
 }

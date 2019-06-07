@@ -7,7 +7,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use App\Entity\User;
 use App\Utils\UserService;
-use App\Controller\EmailController;
+use App\Utils\EmailService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -59,7 +59,7 @@ class UserController extends FOSRestController
      * )
      * @SWG\Tag(name="Usuario")
      */
-    public function create(Request $request,UserService $userService,LoggerInterface $logger,EmailController $emaliController,\Swift_Mailer $mailer)
+    public function create(Request $request,UserService $userService,LoggerInterface $logger,EmailService $emaliService,\Swift_Mailer $mailer)
     {
         $translator = $this->container->get('translator');
         try{
@@ -67,6 +67,7 @@ class UserController extends FOSRestController
             foreach($requiredParameters as $parameter){
                 if(!$request->request->get($parameter)) return new JsonResponse(['error' => $translator->trans('api.user.required_field').$parameter],400);
             }
+            
             $entityManager = $this->getDoctrine()->getManager();
             $email = $request->request->get("email");
             $username = $request->request->get("username");
@@ -79,8 +80,8 @@ class UserController extends FOSRestController
             $logger->error($e->getMessage());
             return new JsonResponse(['error' => $translator->trans('api.user.catch_error')],400);
             }
-            $myEmail = substr($user->getemail(), 0, -1);
-            $emaliController->index($user->getName(),$myEmail,$mailer);
+            dump($user->getVerify());
+            $mail = $emaliService->sendEmail($user->getname(),$user->getId(),$user->getApiKey(),$user->getVerify(),$user->getEmail(),$mailer);
         return new Response($translator->trans('api.user.created_ok').$user->getName());
         
     }

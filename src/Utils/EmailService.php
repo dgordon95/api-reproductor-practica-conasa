@@ -39,4 +39,23 @@ class EmailService
 
         return new Response("Mensaje de confirmacion enviado");
     }
+
+     public function sendResptorePassEmailService($name,$id,$apikey,$verify,$email,$mailer) 
+    {
+         $message = (new \Swift_Message('Hello Email'))
+            ->setFrom('reproductorLibre@gmail.com')
+            ->setTo($email)
+            ->setBody(
+                $this->templating->render(
+                    // templates/emails/registration.html.twig
+                    'emails/restorepass.html.twig',
+                    ['name' => $name,'id' => $id,'apiKey' => $apikey,'verify' => $verify]
+                ),
+                'text/html'
+            )   
+        ;
+        $mailer->send($message);
+
+        return new Response("Mensaje de confirmacion enviado");
+    }
 }

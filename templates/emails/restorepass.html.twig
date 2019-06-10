@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+    </head>
+    <body>
+{# templates/emails/registration.html.twig #}
+<h3>Has olvidado tu contraseña</h3>
+
+Saludos {{ name }}!Se te va a redireccionar al apartado del api-reproductor
+que te permitira cambiar tu contraseña. Pulse en el link:
+
+{# example, assuming you have a route named "login" #}
+{#<a href="{{ my_function('URL_FRONTEND') }}?id={{id}#}
+<a href="http://localhost:8080/#/NewPass?id={{id}}&apikey={{apiKey}}&verify={{verify ? 'Yes' : 'No'}}" class="btn btn-primary btn-lg square" role="button">Verificar</a>
+
+Gracias!
+
+    </body>
+</html>

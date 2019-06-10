@@ -80,8 +80,9 @@ class UserController extends FOSRestController
             $logger->error($e->getMessage());
             return new JsonResponse(['error' => $translator->trans('api.user.catch_error')],400);
             }
-            dump($user->getVerify());
-            $mail = $emaliService->sendEmail($user->getname(),$user->getId(),$user->getApiKey(),$user->getVerify(),$user->getEmail(),$mailer);
+          
+           dump($user);
+            $mail = $emaliService->sendEmail($user->getName(),$user->getId(),$user->getApiKey(),$user->getVerify(),$user->getEmail(),$mailer);
         return new Response($translator->trans('api.user.created_ok').$user->getName());
         
     }
@@ -114,6 +115,7 @@ class UserController extends FOSRestController
             $logger->error($e->getMessage());
             return new JsonResponse(['error' => $translator->trans('api.user.catch_error')],400);
          }
+         dump($user);
         return $user;
     }
 
@@ -140,6 +142,7 @@ class UserController extends FOSRestController
         $translator = $this->container->get('translator');
         try{
            $user = $userService->deleteUserById($request->request->all());
+           
      }
         catch(\Exception $e){
            $logger->error($e->getMessage());
@@ -203,6 +206,45 @@ class UserController extends FOSRestController
             return new JsonResponse(['error' => $translator->trans('api.user.catch_error')],400);
        }
         return $user;
+    }
+
+     /**
+     * Obtener usuario
+     *
+     * Este método permite obtener datos de usuarios, con los campos requeridos.
+     *
+     * @Rest\Get("/api/useremail/{email}"), methods={"GET"})
+     * @SWG\Response(
+     *     response=200,
+     *     description="Devuelve un objeto con todos los datos del usuario'",
+     * )
+     * @SWG\Parameter(
+     *     name="id",
+     *     in="path",
+     *     type="integer",
+     *     description="Id del usuario"
+     * )
+     * @SWG\Tag(name="Usuario")
+     */
+    public function getUserByEmail($email,LoggerInterface $logger,UserService $userService,EmailService $emaliService,\Swift_Mailer $mailer,SerializerInterface $serializer)
+    {
+      $translator = $this->container->get('translator');
+        try{
+           list($user,$error) = $userService->getUserByEmailService($email);
+           if(!is_null($error)) return $error;
+           
+        }
+        catch(\Exception $e){
+            $logger->error($e->getMessage());
+            return new JsonResponse(['error' => $translator->trans('api.user.catch_error')],400);
+         }
+         dump($user);
+        $mail = $emaliService->sendResptorePassEmailService($user->getName(),$user->getId(),$user->getApiKey(),$user->getVerify(),$user->getEmail(),$mailer);
+        return new Response(
+            $serializer->serialize($user, 'json'),
+            Response::HTTP_OK,
+            ['Content-type' => 'application/json']
+        );
     }
     
 } 

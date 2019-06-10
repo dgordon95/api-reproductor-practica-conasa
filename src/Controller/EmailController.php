@@ -27,4 +27,20 @@ class EmailController extends FOSRestController
          }
         return $mail;
     }
+
+     /**
+     * @Route("/email/restorepass/{email}")
+     */
+    public function sendResptorePassEmail($name,$id,$apikey,$verify,$email,\Swift_Mailer $mailer,LoggerInterface $logger,EmailService $emailService)
+    {
+       $translator = $this->container->get('translator');
+        try{
+           $mail = $emailService->sendResptorePassEmailService($name,$email,$mailer);
+        }
+        catch(\Exception $e){
+            $logger->error($e->getMessage());
+            return new JsonResponse(['error' => $translator->trans('api.user.catch_error')],400);
+         }
+        return $mail;
+    }
 }

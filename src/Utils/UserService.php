@@ -163,4 +163,28 @@ class UserService
             $entityManager->flush(); 
             return [$user,null];           
     }
+
+    
+    public function getUserByEmailService($email) 
+    {   
+        $translator = $this->container->get('translator');
+        $entityManager = $this->entityManager;
+        $repository = $entityManager->getRepository(User::class);
+        
+        $user = $repository->findOneBy(['email' => $email]);
+        
+        if (!$user) {
+            $error = ["message"=> $translator->trans('api.userService.unexisting_email').$email];
+            return [null,new Response(
+                json_encode($error),
+                Response::HTTP_NOT_FOUND,
+                ['Content-type' => 'application/json']
+            )];
+        }
+        return [$user,null];
+        
+        
+    }
+    
+
 } 

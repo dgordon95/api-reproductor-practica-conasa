@@ -30,11 +30,8 @@ class ShareService
     public function shareTwitterService() 
     {
         $cadena = 'Estoy escuchando musica con el reproductor de Daniel Gordon';
-       $q = str_replace(' ', '%20', $cadena);
-         
+        $q = str_replace(' ', '%20', $cadena);
         $url='https://twitter.com/intent/tweet?text='.$q;
-           
-        
         return new JsonResponse($url);
     }
 }

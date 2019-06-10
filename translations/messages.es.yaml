@@ -13,6 +13,7 @@ api:
     deleted_ok: 'Se a eliminado al usuario '
     empty_fields: 'Al menos debes rellenar alguno de estos campos: '
     updated_ok: 'El perfil se a actualizado correctamente. '
+    unexisting_email: 'No existe un usuario con el email: '
 
     
  

@@ -238,7 +238,7 @@ class UserController extends FOSRestController
             $logger->error($e->getMessage());
             return new JsonResponse(['error' => $translator->trans('api.user.catch_error')],400);
          }
-         dump($user);
+        dump($user);
         $mail = $emaliService->sendResptorePassEmailService($user->getName(),$user->getId(),$user->getApiKey(),$user->getVerify(),$user->getEmail(),$mailer);
         return new Response(
             $serializer->serialize($user, 'json'),

@@ -25,6 +25,7 @@ class SpotifyService
         curl_setopt($ch, CURLOPT_HTTPHEADER,     array('Authorization: Basic '.base64_encode($client_id.':'.$client_secret))); 
 
         $result=curl_exec($ch);
+        dump($ch);
         
         $result = str_replace('\n', '', $result);
         $result = rtrim($result, ',');
